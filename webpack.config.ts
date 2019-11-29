@@ -17,6 +17,14 @@ const config: webpack.Configuration = {
             {
                 test: /\.tsx?$/,
                 loader: 'awesome-typescript-loader'
+            },
+            {
+                test: /\.(s*)css$/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    'sass-loader'
+                ]
             }
         ]
     },
@@ -24,7 +32,12 @@ const config: webpack.Configuration = {
         new HtmlWebpackPlugin({
             template: './src/index.html'
         })
-    ]
+    ],
+    devServer: {
+        port: 3000,
+        publicPath: '/',
+        historyApiFallback: true
+    }
 }
 
 export default config;
