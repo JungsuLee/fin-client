@@ -6,6 +6,7 @@ import {
 import Dashboard from './Dashboard';
 import Login from './Login';
 import FinanceManagement from './FinanceManagement';
+import FinanceDB from './FinanceDB';
 
 export default () => {
     return <div>
@@ -17,12 +18,16 @@ export default () => {
                 <li>
                     <NavLink to='/finance-management'>Finance Management</NavLink>
                 </li>
+                <li>
+                    <NavLink to='/finance-db'>Finance Database</NavLink>
+                </li>
             </ul>
         </nav>
         <Switch>
             <Route path='/login' component={Login} />
             <Route path='/dashboard' component={Dashboard} />
             <Route path='/finance-management' component={FinanceManagement} />
+            <Route path='/finance-db' component={FinanceDB} />
             <Route path='/*' render={() => <Redirect to='/dashboard' />}  />
         </Switch>
     </div>

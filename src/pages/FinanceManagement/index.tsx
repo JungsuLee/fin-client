@@ -1,35 +1,46 @@
-import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
-import { Icon, HTMLTable, InputGroup } from '@blueprintjs/core';
+import React, { useState, ChangeEvent, useRef, useEffect, FormEvent, useMemo } from 'react';
+import { Icon, HTMLTable, ControlGroup, Button, Colors, Card, FormGroup } from '@blueprintjs/core';
 import uuid from 'uuid/v1';
+import { addFinData, deleteFinData, editFinData } from '../../store/actions/finance';
+import { useSelector, useDispatch } from 'react-redux';
+import { IStoreState } from 'src/store';
+import DateInput from '../../common/DateInput';
+import { RadioGroup, Radio } from '@blueprintjs/core';
 
-interface fin {
-    title: string;
-    amount: string;
-}
 
 export default () => {
-    const [fins, setFins] = useState<fin[]>([]);
+    const [date, setDate] = useState<Date>(new Date());
     const [title, setTitle] = useState<string>('');
+    const [type, setType] = useState<string>('income');
     const [amount, setAmount] = useState<string>('');
     const inputTitleRef = useRef<HTMLInputElement>(null);
-    
+    const dispatch = useDispatch();
+    const finData = useSelector((state: IStoreState) => state.finance.finData);
+    const finDataLen = finData.length;
+    const [totalAmount, setTotalAmount] = useState<number>(0); 
+
+
+    useEffect(() => {
+        calcTotalAmount();
+    }, [finData.length]);
+
+    const calcTotalAmount = () => {
+        let totalAmount = 0;
+        finData.forEach((fin) => totalAmount += Number(fin.amount));
+        setTotalAmount(totalAmount);
+    };
 
     const onSubmit = (e) => {
         e.preventDefault();
-        let currencyFormAmount = amount;
-        if (!amount.includes('.')) {
-            currencyFormAmount = amount + '.00'
-        } else {
-            currencyFormAmount = Number(amount).toFixed(2);
-        }
-        const fin = {
+        const fin: IFinData = {
+            date,
             title,
-            amount: currencyFormAmount
+            type,
+            amount,
+            isSaved: false,
+            
         };
-        setFins([
-            ...fins,
-            fin
-        ]);
+        dispatch(addFinData(fin));
         clearFin();
         inputTitleRef.current && inputTitleRef.current.focus();
     }
@@ -40,35 +51,20 @@ export default () => {
             case 'title':
                 return setTitle(value);
             case 'amount':
-                if (Number(value)) {
-                    return setAmount(value)
-                } else if (value === '') {
-                    return setAmount('0.00')
-                }
+                return setAmount(value);
             default:
                 break;
         }
     }
 
-    const onEdit = (e: ChangeEvent<HTMLInputElement>, i) => {
+    const onEdit = (e: ChangeEvent<HTMLInputElement>, index: number) => {
+        e.preventDefault();
         const { name, value } = e.target;
-        switch (name) {
-            case 'title':
-                return setTitle(value);
-            case 'amount':
-                if (Number(value)) {
-                    return fins[i][name] = value;
-                } else if (value === '') {
-                    return fins[i][name] = '0';
-                }
-            default:
-                break;
-        }
-        setFins(fins);
+        dispatch(editFinData(index, name, value));
     }
 
-    const onDelete = (i) => {
-        setFins(fins.filter((fin, j) => j !== i));
+    const onDelete = (index: number) => {
+        dispatch(deleteFinData(index));
     }
 
     const clearFin = () => {
@@ -76,33 +72,73 @@ export default () => {
         setAmount('');
     }
 
-    return <div>
-        <HTMLTable className='bp3-html-table-condensed bp3-html-table-striped'>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Amount</th>
-                    <th>Del</th>
-                </tr>
-            </thead>
-            <tbody>
-                {fins.map((fin, i) => <tr key={uuid()} >
-                    <th>
-                        <input className='bp3-input bp3-small' name='title' defaultValue={fin.title} onChange={e => onEdit(e, i)} />
-                    </th>
-                    <th>
-                        <input className='bp3-input bp3-small' name='amount' defaultValue={fin.amount} onChange={e => onEdit(e, i)} />
-                    </th>
-                    <th>
-                        <Icon icon='cross' onClick={() => onDelete(i)} />
-                    </th>
-                </tr>)}
-            </tbody>
-        </HTMLTable>
-        <form onSubmit={onSubmit}>
-            <input className='bp3-input bp3-small' type='text' ref={inputTitleRef} name='title' placeholder='title' value={title} onChange={onChange} />
-            <input className='bp3-input bp3-small' name='amount' placeholder='amount' value={amount} onChange={onChange} />
-            <button type='submit' hidden>Submit</button>
-        </form>
+    const onSelectDate = (selectedDate: Date) => {
+        setDate(selectedDate);
+    }
+
+    const onEditDate = (selectedDate: Date, index: number) => {
+        dispatch(editFinData(index, 'date', selectedDate))
+    }
+
+    const onSelectType = (e: FormEvent<HTMLInputElement>) => {
+        setType(e.currentTarget.value);
+    }
+
+    return <div className='finance-management-page'>
+        <Card>
+            <HTMLTable className='bp3-html-table-condensed bp3-html-table-striped'>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Del</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {finData.map((fin, i) => <tr key={uuid()} >
+                            <th>
+                                <DateInput value={fin.date} onSelectDate={(selectedDate: Date) => onEditDate(selectedDate, i)} />
+                            </th>
+                            <th>
+                                <input className='bp3-input bp3-small' name='title' defaultValue={fin.title} onChange={e => onEdit(e, i)} />
+                            </th>
+                            <th>
+                                <input className='bp3-input bp3-small' name='amount' onBlur={calcTotalAmount} defaultValue={fin.amount} onChange={e => onEdit(e, i)} />
+                            </th>
+                            <th>
+                                <Icon icon='cross' onClick={() => onDelete(i)} />
+                            </th>
+                        </tr>
+                    )}
+                    <tr>
+                        <th></th>
+                        <th className='th-align-right'>Total :</th>
+                        <th>$ {totalAmount.toFixed(2)}</th>
+                    </tr>
+                </tbody>
+            </HTMLTable>
+        </Card>
+        <br />
+        <Card>
+            <form onSubmit={onSubmit}>
+                <ControlGroup vertical >
+                    <FormGroup label='Date' >
+                        <DateInput value={date} onSelectDate={onSelectDate} />
+                    </FormGroup>
+                    <RadioGroup label='Type' onChange={onSelectType} selectedValue={type}>
+                        <Radio label='income' value='income' />
+                        <Radio label='outcome' value='outcome' />
+                    </RadioGroup>
+                    <FormGroup label='Title' >
+                        <input className='bp3-input bp3-small' type='text' ref={inputTitleRef} name='title' placeholder='title' value={title} onChange={onChange} />
+                    </FormGroup>
+                    <FormGroup label='Amount' >
+                        <input className='bp3-input bp3-small' name='amount' placeholder='amount' value={amount} onChange={onChange} />
+                    </FormGroup>
+                    <button type='submit' hidden>Submit</button>
+                </ControlGroup>
+            </form>
+        </Card>
     </div>
 }

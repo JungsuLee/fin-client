@@ -6,7 +6,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 const config: webpack.Configuration = {
     entry: './src/index.tsx',
     resolve: {
-        extensions:['.ts', '.tsx', '.js']
+        extensions:['.ts', '.tsx', '.js', '.json']
     },
     output: {
         path: path.resolve(__dirname, '/dist'),
@@ -15,11 +15,12 @@ const config: webpack.Configuration = {
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
-                loader: 'awesome-typescript-loader'
+                test: /\.ts(x?)$/,
+                exclude: /node_modules/,
+                use: 'ts-loader'
             },
             {
-                test: /\.(s*)css$/,
+                test: /\.(scss|css)$/,
                 use: [
                     'style-loader',
                     'css-loader',

@@ -4,7 +4,9 @@ import { IStoreState } from '../reducers';
 
 export enum FinanceActionType {
     CLEAN_FINANCE_DATA = 'CLEAN_FINANCE_DATA',
-    ADD_FINANCE_DATA = 'ADD_FINANCE_DATA'    
+    ADD_FINANCE_DATA = 'ADD_FINANCE_DATA',
+    DELETE_FINANCE_DATA = 'DELETE_FINANCE_DATA',
+    EDIT_FINANCE_DATA = 'EDIT_FINANCE_DATA'
 }
 
 export type FinanceAction = Action<FinanceActionType>;
@@ -17,10 +19,24 @@ export const cleanFinData: ActionCreator<FinanceAction> = () => {
     }
 }
 
-export const addFinData: ActionCreator<FinanceAction> = (finData) => {
+export const addFinData: ActionCreator<FinanceAction> = (finData: IFinData) => {
     return {
         type: FinanceActionType.ADD_FINANCE_DATA,
         payload: { finData }
+    }
+}
+
+export const deleteFinData: ActionCreator<FinanceAction> = (index: number) => {
+    return {
+        type: FinanceActionType.DELETE_FINANCE_DATA,
+        payload: { index }
+    }
+}
+
+export const editFinData: ActionCreator<FinanceAction> = (index: number, key: string, value: string) => {
+    return {
+        type: FinanceActionType.EDIT_FINANCE_DATA,
+        payload: { index, key, value }
     }
 }
 
