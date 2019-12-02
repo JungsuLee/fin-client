@@ -1,11 +1,10 @@
-import React, { useState, ChangeEvent, useRef, useEffect, FormEvent, useMemo } from 'react';
-import { Icon, HTMLTable, ControlGroup, Button, Colors, Card, FormGroup } from '@blueprintjs/core';
+import React, { useState, ChangeEvent, useRef, useEffect, FormEvent } from 'react';
+import { Icon, HTMLTable, ControlGroup, Button, Colors, Card, FormGroup, Label, RadioGroup, Radio, HTMLSelect } from '@blueprintjs/core';
 import uuid from 'uuid/v1';
 import { addFinData, deleteFinData, editFinData } from '../../store/actions/finance';
 import { useSelector, useDispatch } from 'react-redux';
 import { IStoreState } from 'src/store';
 import DateInput from '../../common/DateInput';
-import { RadioGroup, Radio } from '@blueprintjs/core';
 
 
 export default () => {
@@ -16,9 +15,10 @@ export default () => {
     const inputTitleRef = useRef<HTMLInputElement>(null);
     const dispatch = useDispatch();
     const finData = useSelector((state: IStoreState) => state.finance.finData);
-    const finDataLen = finData.length;
     const [totalAmount, setTotalAmount] = useState<number>(0); 
-
+    const [description, setDescription] = useState<string>('');
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    const [category, setCategory] = useState<string>('');
 
     useEffect(() => {
         calcTotalAmount();
@@ -34,33 +34,36 @@ export default () => {
         e.preventDefault();
         const fin: IFinData = {
             date,
-            title,
             type,
+            category,
+            title,
             amount,
+            description,
             isSaved: false,
-            
         };
-        dispatch(addFinData(fin));
+        if (selectedIndex || selectedIndex === 0) {
+            dispatch(editFinData(selectedIndex, fin));
+            calcTotalAmount();
+        } else {
+            dispatch(addFinData(fin));
+        }
+
         clearFin();
         inputTitleRef.current && inputTitleRef.current.focus();
     }
 
-    const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const onChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         switch (name) {
             case 'title':
                 return setTitle(value);
             case 'amount':
                 return setAmount(value);
+            case 'description':
+                return setDescription(value);
             default:
                 break;
         }
-    }
-
-    const onEdit = (e: ChangeEvent<HTMLInputElement>, index: number) => {
-        e.preventDefault();
-        const { name, value } = e.target;
-        dispatch(editFinData(index, name, value));
     }
 
     const onDelete = (index: number) => {
@@ -68,53 +71,69 @@ export default () => {
     }
 
     const clearFin = () => {
+        setSelectedIndex(null);
         setTitle('');
         setAmount('');
+        setDescription('');
     }
 
     const onSelectDate = (selectedDate: Date) => {
         setDate(selectedDate);
     }
 
-    const onEditDate = (selectedDate: Date, index: number) => {
-        dispatch(editFinData(index, 'date', selectedDate))
-    }
-
     const onSelectType = (e: FormEvent<HTMLInputElement>) => {
         setType(e.currentTarget.value);
     }
 
+    const onEdit = (index: number) => {
+        const {date, type, title, amount, description} = finData[index];
+        setSelectedIndex(index);
+        setDate(date);
+        setType(type);
+        setTitle(title);
+        setAmount(amount);
+        setDescription(description);
+    }
+
     return <div className='finance-management-page'>
         <Card>
-            <HTMLTable className='bp3-html-table-condensed bp3-html-table-striped'>
+            <HTMLTable className='bp3-html-table-striped' small striped>
                 <thead>
                     <tr>
                         <th>Date</th>
                         <th>Title</th>
                         <th>Amount</th>
-                        <th>Del</th>
+                        <th>Description</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
                     {finData.map((fin, i) => <tr key={uuid()} >
                             <th>
-                                <DateInput value={fin.date} onSelectDate={(selectedDate: Date) => onEditDate(selectedDate, i)} />
+                                <Label>{fin.date.toLocaleDateString()}</Label>
                             </th>
                             <th>
-                                <input className='bp3-input bp3-small' name='title' defaultValue={fin.title} onChange={e => onEdit(e, i)} />
+                                <Label>{fin.title}</Label>
                             </th>
                             <th>
-                                <input className='bp3-input bp3-small' name='amount' onBlur={calcTotalAmount} defaultValue={fin.amount} onChange={e => onEdit(e, i)} />
+                                <Label className='align-right'>$ {Number(fin.amount).toFixed(2)}</Label>
                             </th>
                             <th>
-                                <Icon icon='cross' onClick={() => onDelete(i)} />
+                                <Label>{fin.description}</Label>
+                            </th>
+                            <th>
+                                <Icon icon='edit' onClick={() => onEdit(i)} />
+                            </th>
+                            <th>
+                                <Icon icon='delete' onClick={() => onDelete(i)} />
                             </th>
                         </tr>
                     )}
                     <tr>
                         <th></th>
-                        <th className='th-align-right'>Total :</th>
-                        <th>$ {totalAmount.toFixed(2)}</th>
+                        <th className='align-right'>Total :</th>
+                        <th className='align-right'>$ {totalAmount.toFixed(2)}</th>
                     </tr>
                 </tbody>
             </HTMLTable>
@@ -126,17 +145,25 @@ export default () => {
                     <FormGroup label='Date' >
                         <DateInput value={date} onSelectDate={onSelectDate} />
                     </FormGroup>
-                    <RadioGroup label='Type' onChange={onSelectType} selectedValue={type}>
+                    <RadioGroup label='Type' onChange={onSelectType} selectedValue={type} inline>
                         <Radio label='income' value='income' />
                         <Radio label='outcome' value='outcome' />
                     </RadioGroup>
+                    <FormGroup label='Category'>
+                        <HTMLSelect >
+                            <option>Category</option>
+                        </HTMLSelect>
+                    </FormGroup>
                     <FormGroup label='Title' >
                         <input className='bp3-input bp3-small' type='text' ref={inputTitleRef} name='title' placeholder='title' value={title} onChange={onChange} />
                     </FormGroup>
                     <FormGroup label='Amount' >
                         <input className='bp3-input bp3-small' name='amount' placeholder='amount' value={amount} onChange={onChange} />
                     </FormGroup>
-                    <button type='submit' hidden>Submit</button>
+                    <FormGroup label='Description' >
+                        <input className='bp3-input bp3-small bp3-fill' name='description' placeholder='description' value={description} onChange={onChange} />
+                    </FormGroup>
+                    <Button text='Save' type='submit' />
                 </ControlGroup>
             </form>
         </Card>

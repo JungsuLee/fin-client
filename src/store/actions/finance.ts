@@ -33,10 +33,10 @@ export const deleteFinData: ActionCreator<FinanceAction> = (index: number) => {
     }
 }
 
-export const editFinData: ActionCreator<FinanceAction> = (index: number, key: string, value: string) => {
+export const editFinData: ActionCreator<FinanceAction> = (index: number, finData: IFinData) => {
     return {
         type: FinanceActionType.EDIT_FINANCE_DATA,
-        payload: { index, key, value }
+        payload: { index, finData }
     }
 }
 

@@ -33,14 +33,12 @@ const reducer: Reducer<IFinanceStore, AnyAction> = (state = initialState, action
             }
         case FinanceActionType.EDIT_FINANCE_DATA:            
             const editIndex = action.payload.index;
-            const editKey = action.payload.key;
-            const editValue = action.payload.value;
-            finData[editIndex][editKey] = editValue;
+            const editFinData = action.payload.finData;
+            finData[editIndex] = editFinData;
             return {
                 ...state,
                 finData
             }
-
         default:
             return state
     }

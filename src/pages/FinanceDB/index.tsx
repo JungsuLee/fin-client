@@ -1,6 +1,7 @@
 import React, { useEffect, useReducer } from 'react';
 import { useSelector } from 'react-redux';
 import { IStoreState } from 'src/store';
+import mockFinData from '../../../mock_data/finData';
 
 
 export default () => {

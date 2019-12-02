@@ -1,7 +1,9 @@
 interface IFinData {
     date: Date;
-    title: string;
     type: string;
+    category: string;
+    title: string;
     amount: string;
+    description: string;
     isSaved: boolean;
 }

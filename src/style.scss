@@ -2,6 +2,13 @@
 @import '~@blueprintjs/datetime/lib/css/blueprint-datetime.css';
 @import 'pages/FinanceManagement/style.scss';
 
-.th-align-right {
+.align-right {
     text-align: right;
+}
+
+.bp3-input-group {
+    .bp3-input {
+        height: 24px;
+        font-size: 12px;
+    }
 }
