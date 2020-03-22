@@ -3,7 +3,7 @@ import { AnyAction, Reducer } from 'redux';
 
 
 export const initialState = {
-    offerings: [] as IOffering[],
+    data: {} as IFinData,
     isFetching: false
 }
 
@@ -11,10 +11,10 @@ export type IFinanceStore = Readonly<typeof initialState>;
 
 const reducer: Reducer<IFinanceStore, AnyAction> = (state = initialState, action) => {
     switch (action.type) {
-        case FinanceActionType.FETCH_OFFERINGS:
+        case FinanceActionType.FETCH_FIN_DATA:
             return {
                 ...state,
-                offerings: action.payload.offerings,
+                data: action.payload.finData,
                 isFetching: false,
             }
         // case FinanceActionType.ADD_FINANCE_DATA:

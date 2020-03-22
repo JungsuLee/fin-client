@@ -5,24 +5,25 @@ import api from '../api';
 
 
 export enum FinanceActionType {
-    FETCH_OFFERINGS = 'FETCH_OFFERINGS',
+    FETCH_FIN_DATA = 'FETCH_FIN_DATA',
 }
 
 export type FinanceAction = Action<FinanceActionType>;
 export type FinanceAsyncAction = ThunkAction<Promise<void>, IStoreState, null, FinanceAction>;
 
 
-const fetchOfferings: ActionCreator<FinanceAction> = (offerings: IOffering[]) => ({
-    type: FinanceActionType.FETCH_OFFERINGS,
-    payload: { offerings},
+const fetchFinData: ActionCreator<FinanceAction> = (finData: IFinData) => ({
+    type: FinanceActionType.FETCH_FIN_DATA,
+    payload: { finData},
 });
 
-export const getOfferings: ActionCreator<FinanceAsyncAction> = () => async (dispatch) => {
+export const getFinData: ActionCreator<FinanceAsyncAction> = () => async (dispatch) => {
     try {
-        const offerings: IOffering = await api.request('get', '/fin/offerings');
-        dispatch(fetchOfferings(offerings))
+        const finData: IFinData = await api.request('get', '/fin/data')
+        dispatch(fetchFinData(finData));
     } catch (error) {}
 }
+
 
 
 // export const cleanFinData: ActionCreator<FinanceAction> = () => {

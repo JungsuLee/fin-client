@@ -6,14 +6,11 @@ import store from './store'
 import App from './pages';
 import './style.scss';
 
-
-
-
-ReactDOM.render (
+ReactDOM.render(
     <Provider store={store}>
         <BrowserRouter>
             <App />
         </BrowserRouter>
     </Provider>,
     document.getElementById('root')
-)
+);

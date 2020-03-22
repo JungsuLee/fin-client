@@ -1,19 +1,32 @@
 interface IFinData {
-    date: Date;
-    type: string;
-    category: string;
-    title: string;
-    amount: string;
-    description: string;
-    isSaved: boolean;
+    offerings: IOffering[];
+    expenses: IExpense[];
+    revenues: IRevenue[];
 }
 
 interface IOffering {
-    id: string;
-    date: Date;
+    date: string;
     amount: number;
     description: string;
     name: string;
     category: string;
     moneyType: string;
 }
+
+interface IExpense {
+    date: string;
+    amount: number;
+    description: string;
+    team: string;
+    status: string;
+    reference: string;
+}
+
+interface IRevenue {
+    date: string;
+    amount: number;
+    description: string;
+    team: string;
+    reference: string;
+}
+
