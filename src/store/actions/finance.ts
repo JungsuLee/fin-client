@@ -11,15 +11,14 @@ export enum FinanceActionType {
 export type FinanceAction = Action<FinanceActionType>;
 export type FinanceAsyncAction = ThunkAction<Promise<void>, IStoreState, null, FinanceAction>;
 
-
 const fetchFinData: ActionCreator<FinanceAction> = (finData: IFinData) => ({
     type: FinanceActionType.FETCH_FIN_DATA,
     payload: { finData},
 });
 
-export const getFinData: ActionCreator<FinanceAsyncAction> = () => async (dispatch) => {
+export const getFinData: ActionCreator<FinanceAsyncAction> = (year: string) => async (dispatch) => {
     try {
-        const finData: IFinData = await api.request('get', '/fin/data')
+        const finData: IFinData = await api.request('get', `/fin/data/${year}`)
         dispatch(fetchFinData(finData));
     } catch (error) {}
 }

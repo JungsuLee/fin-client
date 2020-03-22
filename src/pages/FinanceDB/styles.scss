@@ -1,5 +1,10 @@
 .finance-db-page {
     .finance-table-field {
         display: flex;
+
+        .amount-col {
+            display: flex;
+            justify-content: space-between;
+        }
     }
 }
