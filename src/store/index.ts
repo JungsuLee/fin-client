@@ -1,11 +1,13 @@
-import { createStore, applyMiddleware, Middleware, Action, compose } from 'redux';
-import thunkMiddleware, { ThunkDispatch } from 'redux-thunk';
-import rootReducer, { IStoreState as _IStoreState } from './reducers';
+import { applyMiddleware, compose, createStore } from 'redux'
+import thunkMiddleware from 'redux-thunk'
+import rootReducer from './reducers'
 
-let middleware: Middleware[] = [thunkMiddleware];
-const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(...middleware)));
+const configureStore = () => {
+  const middlewares = [thunkMiddleware];
+  const middlewareEnhancer = applyMiddleware(...middlewares);
+  const composedEnhancers = compose(middlewareEnhancer);
+  return createStore(rootReducer, composedEnhancers);
+};
+const store = configureStore();
 
-export type DispatchFunction = ThunkDispatch<_IStoreState, null, Action>;
 export default store;
-export type IStoreState = _IStoreState;

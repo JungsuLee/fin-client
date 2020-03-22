@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import finance, { IFinanceStore, initialState as financeInitState } from './finance';
+import finance, { IFinanceStore } from './finance';
 
 export interface IStoreState {
     readonly finance: IFinanceStore;

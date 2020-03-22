@@ -5,7 +5,7 @@ import {
 
 import Dashboard from './Dashboard';
 import Login from './Login';
-import FinanceManagement from './FinanceManagement';
+// import FinanceManagement from './FinanceManagement';
 import FinanceDB from './FinanceDB';
 
 export default () => {
@@ -15,9 +15,9 @@ export default () => {
                 <li>
                     <NavLink to='/dashboard'>Dashboard</NavLink>
                 </li>
-                <li>
+                {/* <li>
                     <NavLink to='/finance-management'>Finance Management</NavLink>
-                </li>
+                </li> */}
                 <li>
                     <NavLink to='/finance-db'>Finance Database</NavLink>
                 </li>
@@ -26,7 +26,7 @@ export default () => {
         <Switch>
             <Route path='/login' component={Login} />
             <Route path='/dashboard' component={Dashboard} />
-            <Route path='/finance-management' component={FinanceManagement} />
+            {/* <Route path='/finance-management' component={FinanceManagement} /> */}
             <Route path='/finance-db' component={FinanceDB} />
             <Route path='/*' render={() => <Redirect to='/dashboard' />}  />
         </Switch>
