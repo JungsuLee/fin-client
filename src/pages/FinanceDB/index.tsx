@@ -1,13 +1,13 @@
-import React, { useEffect, useState, FormEventHandler, ChangeEvent, ReactChildren, ReactElement } from 'react';
+import React, { useEffect, useState, ChangeEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFinData } from '../../store/actions/finance';
+import { getFinData, getFinSummary } from '../../store/actions/finance';
 import { IStoreState } from 'src/store/reducers';
 
-import { Card, InputGroup, HTMLSelect } from '@blueprintjs/core';
+import { Card, HTMLSelect } from '@blueprintjs/core';
 
 export default () => {
-    const finData: IFinData = useSelector((state: IStoreState) => state.finance.data);
-    const [searchString, setSearchString] = useState<string>('');
+    const finData: IFinData = useSelector((state: IStoreState) => state.finance.finData);
+    const finSummary: IFinSummary = useSelector((state: IStoreState) => state.finance.finSummary);
     const [selectedYear, setSelectedYear] = useState<string>('');
     const [selectedMonth, setSelectedMonth] = useState<string>('');
     const [selectedDate, setSelectedDate] = useState<string>('');
@@ -19,6 +19,16 @@ export default () => {
         setSelectedDate('');
         setDates([]);
     }, [finData]);
+
+    useEffect(() => {
+        dispatch(getFinSummary());
+    }, []);
+
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2
+    });
 
     const renderFinTable = (finData: any, title: string, headers: string[]) => {
         return <Card>
@@ -47,10 +57,7 @@ export default () => {
                             {headers.includes('Date') && <td>{dateString}</td>}
                             {headers.includes('Category') && <td>{fin.category}</td>}
                             {headers.includes('Team') && <td>{fin.team}</td>}
-                            {headers.includes('Amount') && <td className='amount-col'>
-                                <div>$</div>
-                                <div>{fin.amount.toFixed(2)}</div>
-                            </td>}
+                            {headers.includes('Amount') && <td className='amount-cell'>{formatter.format(fin.amount)}</td>}
                             {headers.includes('Description') && <td>{fin.description}</td>}
                         </tr>
                     })}
@@ -100,12 +107,36 @@ export default () => {
         </HTMLSelect>
     };
 
+    const renderFinSummary = () => {
+        const renderSummaryElement = (title: string, amount: number) => <div className='space-between'>
+            <div>{title}</div> 
+            <div>{formatter.format(amount)}</div>
+        </div>
+        return <Card className='summary-card'>
+            <label className='title-text'>Offering Summary</label>
+            <div className='content'>
+                {renderSummaryElement('일반헌금:', finSummary.totalAmount - finSummary.totalMissionaryOffering - finSummary.totalVehicleOffering - finSummary.totalConstructionOffering)}
+                {renderSummaryElement('선교헌금:', finSummary.totalMissionaryOffering)}
+                {renderSummaryElement('차량헌금:', finSummary.totalVehicleOffering)}
+                {renderSummaryElement('건축헌금:', finSummary.totalConstructionOffering)}
+                <div>-------------------------------------</div>
+                {renderSummaryElement('Total:', finSummary.totalAmount)}
+            </div>
+        </Card>
+    }
+
     return <div className='finance-db-page'>
-        {renderYearSelect()}
-        {renderMonthSelect()}
-        <label> or </label>
-        {renderDateSelect()}
-        <InputGroup leftIcon='search' value={searchString} onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchString(e.target.value)} />
+        <div className='header'>
+            <Card className='control-field'>
+                <div>
+                    {renderYearSelect()}
+                    {renderMonthSelect()}
+                    <label> or </label>
+                    {renderDateSelect()}
+                </div>
+                {finSummary.totalAmount && renderFinSummary()}
+            </Card>
+        </div>
         <div className='finance-table-field'>
             {finData.offerings && renderFinTable(finData.offerings, 'Offering', ['Date', 'Category', 'Amount', 'Description'])}
             {finData.expenses && renderFinTable(finData.expenses, 'Expense', ['Date', 'Team', 'Amount', 'Description'])}

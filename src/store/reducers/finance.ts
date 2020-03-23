@@ -3,8 +3,8 @@ import { AnyAction, Reducer } from 'redux';
 
 
 export const initialState = {
-    data: {} as IFinData,
-    isFetching: false
+    finData: {} as IFinData,
+    finSummary: {} as IFinSummary,
 }
 
 export type IFinanceStore = Readonly<typeof initialState>;
@@ -14,9 +14,13 @@ const reducer: Reducer<IFinanceStore, AnyAction> = (state = initialState, action
         case FinanceActionType.FETCH_FIN_DATA:
             return {
                 ...state,
-                data: action.payload.finData,
-                isFetching: false,
-            }
+                finData: action.payload.finData,
+            };
+        case FinanceActionType.FETCH_FIN_SUMMARY:
+            return {
+                ...state,
+                finSummary: action.payload.finSummary,
+            };
         // case FinanceActionType.ADD_FINANCE_DATA:
         //     const newFinData: IFinData = action.payload.finData;
         //     finData.push(newFinData)

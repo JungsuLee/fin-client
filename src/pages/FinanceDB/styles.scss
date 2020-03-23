@@ -1,10 +1,24 @@
 .finance-db-page {
-    .finance-table-field {
+    .header {
         display: flex;
-
-        .amount-col {
+        justify-content: space-between;
+        .control-field {
+            width: 100%;
             display: flex;
             justify-content: space-between;
         }
+        .content {
+            margin-top: 10px;
+        }
+    }
+    .finance-table-field {
+        display: flex;
+        margin-top: 15px;
+    }
+    .amount-cell {
+        text-align: right;
+    }
+    .summary-card {
+        width: 250px;
     }
 }

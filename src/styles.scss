@@ -6,10 +6,22 @@
 .align-right {
     text-align: right;
 }
+.title-text {
+    font-size: larger;
+}
 
 .bp3-input-group {
     .bp3-input {
         height: 24px;
         font-size: 12px;
     }
+}
+
+.flex {
+    display: flex;
+}
+
+.space-between {
+    display: flex;
+    justify-content: space-between;
 }

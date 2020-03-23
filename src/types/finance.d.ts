@@ -30,3 +30,10 @@ interface IRevenue {
     reference: string;
 }
 
+interface IFinSummary {
+    totalAmount: number;
+    totalGeneralOffering: number;
+    totalMissionaryOffering: number;
+    totalVehicleOffering: number;
+    totalConstructionOffering: number;
+}
