@@ -89,7 +89,7 @@ export default () => {
             setSelectedMonth(month);
             setSelectedDate('');
         }
-        return <HTMLSelect value={selectedMonth} onChange={onSelectMonth} disabled={!selectedYear}>
+        return <HTMLSelect className='month-select' value={selectedMonth} onChange={onSelectMonth} disabled={!selectedYear}>
             <option value=''>Select Month</option>
             {months.map((month, i) => <option key={i} value={`${i + 1}`}>{month}</option>)}
         </HTMLSelect>
@@ -107,13 +107,13 @@ export default () => {
         </HTMLSelect>
     };
 
+    const renderSummaryElement = (title: string, amount: number) => <div className='space-between'>
+        <div>{title}</div> 
+        <div>{formatter.format(amount)}</div>
+    </div>
     const renderFinSummary = () => {
-        const renderSummaryElement = (title: string, amount: number) => <div className='space-between'>
-            <div>{title}</div> 
-            <div>{formatter.format(amount)}</div>
-        </div>
         return <Card className='summary-card'>
-            <label className='title-text'>Offering Summary</label>
+            <label className='title-text'>Total Offering Summary</label>
             <div className='content'>
                 {renderSummaryElement('일반헌금:', finSummary.totalAmount - finSummary.totalMissionaryOffering - finSummary.totalVehicleOffering - finSummary.totalConstructionOffering)}
                 {renderSummaryElement('선교헌금:', finSummary.totalMissionaryOffering)}
@@ -121,6 +121,16 @@ export default () => {
                 {renderSummaryElement('건축헌금:', finSummary.totalConstructionOffering)}
                 <div>-------------------------------------</div>
                 {renderSummaryElement('Total:', finSummary.totalAmount)}
+            </div>
+        </Card>
+    }
+    const renderFinAnualSummary = () => {
+        return <Card className='summary-card'>
+            <label className='title-text'>{`${selectedYear} Summary`}</label>
+            <div className='content'>
+                {renderSummaryElement('일반헌금:', finData.totalGeneralOffering)}
+                {renderSummaryElement('노회(1.5%):', finData.totalGeneralOffering * 0.015)}
+                {renderSummaryElement('총회(0.5%):', finData.totalGeneralOffering * 0.005)}
             </div>
         </Card>
     }
@@ -134,7 +144,10 @@ export default () => {
                     <label> or </label>
                     {renderDateSelect()}
                 </div>
-                {finSummary.totalAmount && renderFinSummary()}
+                <div className='flex'>
+                    {finData.totalGeneralOffering && renderFinAnualSummary()}
+                    {finSummary.totalAmount && renderFinSummary()}
+                </div>
             </Card>
         </div>
         <div className='finance-table-field'>

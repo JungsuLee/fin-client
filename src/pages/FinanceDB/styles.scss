@@ -6,6 +6,9 @@
             width: 100%;
             display: flex;
             justify-content: space-between;
+            .month-select {
+                margin-left: 10px;
+            }
         }
         .content {
             margin-top: 10px;
@@ -20,5 +23,6 @@
     }
     .summary-card {
         width: 250px;
+        margin-left: 15px;
     }
 }
