@@ -8,10 +8,10 @@ interface IFinData {
 interface IOffering {
     date: string;
     amount: number;
-    description: string;
-    name: string;
+    // description: string;
+    // name: string;
     category: string;
-    moneyType: string;
+    // moneyType: string;
 }
 
 interface IExpense {

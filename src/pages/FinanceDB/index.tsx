@@ -41,20 +41,18 @@ export default () => {
                 </thead>
                 <tbody>
                     {finData.map((fin: any, i) => {
-                        const date = new Date(fin.date);
-                        const dateString = `${date.getMonth() + 1}/${date.getDate()}`;
-                        if (!dates.includes(dateString)) {
-                            dates.push(dateString);
+                        if (!dates.includes(fin.date)) {
+                            dates.push(fin.date);
                             setDates(dates);
                         }
-                        if (selectedDate && dateString !== selectedDate) {
+                        if (selectedDate && fin.date !== selectedDate) {
                             return
                         }
-                        if (selectedMonth && dateString.split('/')[0] !== selectedMonth) {
+                        if (selectedMonth && fin.date.split('/')[0] !== selectedMonth) {
                             return
                         }
                         return <tr key={i}>
-                            {headers.includes('Date') && <td>{dateString}</td>}
+                            {headers.includes('Date') && <td>{fin.date}</td>}
                             {headers.includes('Category') && <td>{fin.category}</td>}
                             {headers.includes('Team') && <td>{fin.team}</td>}
                             {headers.includes('Amount') && <td className='amount-cell'>{formatter.format(fin.amount)}</td>}
@@ -77,7 +75,7 @@ export default () => {
             setSelectedMonth('');
         }
         return <HTMLSelect onChange={onSelectYear}>
-            <option value=''>Select Year</option>
+            <option value=''>Year</option>
             {years.map((year, i) => <option key={i} value={year}>{year}</option>)}
         </HTMLSelect>
     };
@@ -85,13 +83,13 @@ export default () => {
     const renderMonthSelect = () => {
         const months = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ];
         const onSelectMonth = (e: ChangeEvent<HTMLSelectElement>) => {
-            const month = e.target.value;
+            let month = e.target.value;
             setSelectedMonth(month);
             setSelectedDate('');
         }
         return <HTMLSelect className='month-select' value={selectedMonth} onChange={onSelectMonth} disabled={!selectedYear}>
-            <option value=''>Select Month</option>
-            {months.map((month, i) => <option key={i} value={`${i + 1}`}>{month}</option>)}
+            <option value=''>Month</option>
+            {months.map((month, i) => <option key={i} value={`${i + 1}`.length === 1 ? `0${i + 1}` : `${i + 1}`}>{month}</option>)}
         </HTMLSelect>
     };
 
@@ -102,7 +100,7 @@ export default () => {
             setSelectedMonth('');
         }
         return <HTMLSelect value={selectedDate} onChange={onSelectDate} disabled={!selectedYear}>
-            <option value=''>Select Date</option>
+            <option value=''>Date</option>
             {dates.map((date, i) => <option key={i} value={date}>{date}</option>)}
         </HTMLSelect>
     };
@@ -134,6 +132,9 @@ export default () => {
             </div>
         </Card>
     }
+    // const renderMonthlySummary = () => {
+    //     finData
+    // }
 
     return <div className='finance-db-page'>
         <div className='header'>
@@ -151,7 +152,7 @@ export default () => {
             </Card>
         </div>
         <div className='finance-table-field'>
-            {finData.offerings && renderFinTable(finData.offerings, 'Offering', ['Date', 'Category', 'Amount', 'Description'])}
+            {finData.offerings && renderFinTable(finData.offerings, 'Offering', ['Date', 'Category', 'Amount'])}
             {finData.expenses && renderFinTable(finData.expenses, 'Expense', ['Date', 'Team', 'Amount', 'Description'])}
             {finData.revenues && renderFinTable(finData.revenues, 'Revenue', ['Date', 'Team', 'Amount', 'Description'])}
         </div>
