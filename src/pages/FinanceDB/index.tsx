@@ -4,6 +4,7 @@ import { getFinData, getFinSummary } from '../../store/actions/finance';
 import { IStoreState } from 'src/store/reducers';
 
 import { Card, HTMLSelect } from '@blueprintjs/core';
+import { isEmpty } from 'lodash'
 
 export default () => {
     const finData: IFinData = useSelector((state: IStoreState) => state.finance.finData);
@@ -13,6 +14,10 @@ export default () => {
     const [selectedDate, setSelectedDate] = useState<string>('');
     const [dates, setDates] = useState<string[]>([]);
     const dispatch = useDispatch();
+    const months = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ];
+    const [totalOffering, setTotalOffering] = useState<number>(0);
+    const [totalExpense, setTotalExpense] = useState<number>(0);
+    const [totalRevenue, setTotalRevenue] = useState<number>(0);
     
     useEffect(() => {
         console.log(finData);
@@ -81,11 +86,18 @@ export default () => {
     };
 
     const renderMonthSelect = () => {
-        const months = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ];
         const onSelectMonth = (e: ChangeEvent<HTMLSelectElement>) => {
             let month = e.target.value;
             setSelectedMonth(month);
             setSelectedDate('');
+            if (month) {
+                const totalOffering = finData.offerings.filter((offering) => offering.date.split('/')[0] === month).map((offering) => offering.amount).reduce((a, b) => a + b, 0);
+                const totalExpense = finData.expenses.filter((expense) => expense.date.split('/')[0] === month).map((expense) => expense.amount).reduce((a, b) => a + b, 0);
+                const totalRevenue = finData.revenues.filter((revenue) => revenue.date.split('/')[0] === month).map((revenue) => revenue.amount).reduce((a, b) => a + b, 0);
+                setTotalOffering(totalOffering);
+                setTotalExpense(totalExpense);
+                setTotalRevenue(totalRevenue);
+            }
         }
         return <HTMLSelect className='month-select' value={selectedMonth} onChange={onSelectMonth} disabled={!selectedYear}>
             <option value=''>Month</option>
@@ -98,6 +110,14 @@ export default () => {
             const date = e.target.value;
             setSelectedDate(date);
             setSelectedMonth('');
+            if (date) {
+                const totalOffering = finData.offerings.filter((offering) => offering.date === date).map((offering) => offering.amount).reduce((a, b) => a + b, 0);
+                const totalExpense = finData.expenses.filter((expense) => expense.date === date).map((expense) => expense.amount).reduce((a, b) => a + b, 0);
+                const totalRevenue = finData.revenues.filter((revenue) => revenue.date === date).map((revenue) => revenue.amount).reduce((a, b) => a + b, 0);
+                setTotalOffering(totalOffering);
+                setTotalExpense(totalExpense);
+                setTotalRevenue(totalRevenue);
+            }
         }
         return <HTMLSelect value={selectedDate} onChange={onSelectDate} disabled={!selectedYear}>
             <option value=''>Date</option>
@@ -132,9 +152,24 @@ export default () => {
             </div>
         </Card>
     }
-    // const renderMonthlySummary = () => {
-    //     finData
-    // }
+    const renderSubSummary = () => {
+        let title = '';
+        if (selectedMonth) {
+            title = `${selectedYear} ${months[Number(selectedMonth) - 1]} Summary`; 
+        } else if (selectedDate) {
+            title = `${selectedDate}/${selectedYear} Summary`
+        }
+        return <Card className='summary-card'>
+            <label className='title-text'>{title}</label>
+            <div className='content'>
+                {renderSummaryElement('Total Offering:', totalOffering)}
+                {renderSummaryElement('Total Revenue:', totalRevenue)}
+                {renderSummaryElement('Total Expense:', totalExpense)}
+                <div>-------------------------------------</div>
+                {renderSummaryElement('Difference:', totalOffering - totalExpense + totalRevenue)}
+            </div>
+        </Card>
+    }
 
     return <div className='finance-db-page'>
         <div className='header'>
@@ -146,8 +181,9 @@ export default () => {
                     {renderDateSelect()}
                 </div>
                 <div className='flex'>
-                    {finData.totalGeneralOffering && renderFinAnualSummary()}
-                    {finSummary.totalAmount && renderFinSummary()}
+                    {(selectedMonth || selectedDate) && renderSubSummary()}
+                    {!isEmpty(finData) && renderFinAnualSummary()}
+                    {finSummary && renderFinSummary()}
                 </div>
             </Card>
         </div>
