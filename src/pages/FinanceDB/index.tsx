@@ -70,7 +70,7 @@ export default () => {
     };
 
     const renderYearSelect = () => {
-        const years = ['2020', '2019']
+        const years = ['2020', '2019', '2018', '2017', '2016', '2015']
         const onSelectYear = (e: ChangeEvent<HTMLSelectElement>) => {
             const year = e.target.value;
             if (year) {
@@ -125,30 +125,42 @@ export default () => {
         </HTMLSelect>
     };
 
+    const renderSplitter = <div>-------------------------------------</div>;
+
     const renderSummaryElement = (title: string, amount: number) => <div className='space-between'>
         <div>{title}</div> 
         <div>{formatter.format(amount)}</div>
     </div>
     const renderFinSummary = () => {
         return <Card className='summary-card'>
-            <label className='title-text'>Total Offering Summary</label>
+            <label className='title-text'>Financial Status</label>
             <div className='content'>
                 {renderSummaryElement('일반헌금:', finSummary.totalAmount - finSummary.totalMissionaryOffering - finSummary.totalVehicleOffering - finSummary.totalConstructionOffering)}
                 {renderSummaryElement('선교헌금:', finSummary.totalMissionaryOffering)}
                 {renderSummaryElement('차량헌금:', finSummary.totalVehicleOffering)}
                 {renderSummaryElement('건축헌금:', finSummary.totalConstructionOffering)}
-                <div>-------------------------------------</div>
+                {renderSplitter}
                 {renderSummaryElement('Total:', finSummary.totalAmount)}
+                {renderSummaryElement('Available:', finSummary.totalAmount - finSummary.totalMissionaryOffering - finSummary.totalVehicleOffering - finSummary.totalConstructionOffering)}
             </div>
         </Card>
     }
     const renderFinAnualSummary = () => {
+        const totalOffering = finData.totalGeneralOffering + finData.totalSpecialOffering
+        const totalIncome = totalOffering + finData.totalRevenue;
         return <Card className='summary-card'>
             <label className='title-text'>{`${selectedYear} Summary`}</label>
             <div className='content'>
                 {renderSummaryElement('일반헌금:', finData.totalGeneralOffering)}
-                {renderSummaryElement('노회(1.5%):', finData.totalGeneralOffering * 0.015)}
-                {renderSummaryElement('총회(0.5%):', finData.totalGeneralOffering * 0.005)}
+                {renderSummaryElement('- 노회(1.5%):', finData.totalGeneralOffering * 0.015)}
+                {renderSummaryElement('- 총회(0.5%):', finData.totalGeneralOffering * 0.005)}
+                {renderSummaryElement('특별헌금:', finData.totalSpecialOffering)}
+                {renderSplitter}
+                {renderSummaryElement('Total Offering:', totalOffering)}
+                {renderSummaryElement('Total Revenue:', finData.totalRevenue)}
+                {renderSummaryElement('Total Expense:', finData.totalExpense)}
+                {renderSplitter}
+                {renderSummaryElement('Difference:', totalIncome - finData.totalExpense)}
             </div>
         </Card>
     }
@@ -165,7 +177,7 @@ export default () => {
                 {renderSummaryElement('Total Offering:', totalOffering)}
                 {renderSummaryElement('Total Revenue:', totalRevenue)}
                 {renderSummaryElement('Total Expense:', totalExpense)}
-                <div>-------------------------------------</div>
+                {renderSplitter}
                 {renderSummaryElement('Difference:', totalOffering - totalExpense + totalRevenue)}
             </div>
         </Card>
@@ -182,15 +194,16 @@ export default () => {
                 </div>
                 <div className='flex'>
                     {(selectedMonth || selectedDate) && renderSubSummary()}
-                    {!isEmpty(finData) && renderFinAnualSummary()}
+                    {(!isEmpty(finData) && selectedYear) && renderFinAnualSummary()}
                     {finSummary && renderFinSummary()}
                 </div>
             </Card>
         </div>
+        {selectedYear &&
         <div className='finance-table-field'>
             {finData.offerings && renderFinTable(finData.offerings, 'Offering', ['Date', 'Category', 'Amount'])}
             {finData.expenses && renderFinTable(finData.expenses, 'Expense', ['Date', 'Team', 'Amount', 'Description'])}
             {finData.revenues && renderFinTable(finData.revenues, 'Revenue', ['Date', 'Team', 'Amount', 'Description'])}
-        </div>
+        </div>}
     </div>
 }

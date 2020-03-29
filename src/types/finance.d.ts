@@ -3,6 +3,9 @@ interface IFinData {
     expenses: IExpense[];
     revenues: IRevenue[];
     totalGeneralOffering: number;
+    totalSpecialOffering: number;
+    totalExpense: number;
+    totalRevenue: number;
 }
 
 interface IOffering {
