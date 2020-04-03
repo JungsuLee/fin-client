@@ -2,7 +2,7 @@ import React, { useEffect, useState, ChangeEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFinData, getFinSummary } from '../../store/actions/finance';
 import { IStoreState } from 'src/store/reducers';
-
+import { months, formatter } from '../helpers';
 import { Card, HTMLSelect } from '@blueprintjs/core';
 import { isEmpty } from 'lodash'
 
@@ -14,7 +14,7 @@ export default () => {
     const [selectedDate, setSelectedDate] = useState<string>('');
     const [dates, setDates] = useState<string[]>([]);
     const dispatch = useDispatch();
-    const months = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ];
+    
     const [totalOffering, setTotalOffering] = useState<number>(0);
     const [totalExpense, setTotalExpense] = useState<number>(0);
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
@@ -29,11 +29,7 @@ export default () => {
         dispatch(getFinSummary());
     }, []);
 
-    const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2
-    });
+    
 
     const renderFinTable = (finData: any, title: string, headers: string[]) => {
         return <Card>

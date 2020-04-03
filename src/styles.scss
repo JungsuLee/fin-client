@@ -2,9 +2,13 @@
 @import '~@blueprintjs/datetime/lib/css/blueprint-datetime.css';
 @import 'pages/FinanceManagement/style.scss';
 @import 'pages/FinanceDB/styles.scss';
+@import 'pages/Analytics/styles.scss';
 
 .align-right {
-    text-align: right;
+    text-align: right !important;
+}
+.align-center {
+    text-align: center !important;
 }
 .title-text {
     font-size: larger;
