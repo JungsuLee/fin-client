@@ -24,7 +24,7 @@ export default () => {
             annaulAnalytics.forEach((a) => {
                 result[a.category] = {
                     ...result[a.category],
-                    [a.month]: a.amount,
+                    [a.month]: result[a.category] && result[a.category][a.month] ? result[a.category][a.month] + a.amount : a.amount,
                     type: a.type,
                 }
                 if (result[a.category].total) {
