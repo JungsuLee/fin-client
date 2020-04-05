@@ -1,15 +1,19 @@
 import React, { useEffect, useState, ChangeEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFinData, getFinSummary } from '../../store/actions/finance';
+import { getFinData, cleanFinData } from '../../store/actions/finance';
 import { IStoreState } from 'src/store/reducers';
 import { months, formatter } from '../helpers';
 import { Card, HTMLSelect } from '@blueprintjs/core';
 import { isEmpty } from 'lodash'
+import FinSummary from '../../common/FinSummary';
+import YearSelection from '../../common/YearSelection';
+
 
 export default () => {
+    const selectedYear = useSelector((state: IStoreState) => state.finance.selectedYear);
     const finData: IFinData = useSelector((state: IStoreState) => state.finance.finData);
     const finSummary: IFinSummary = useSelector((state: IStoreState) => state.finance.finSummary);
-    const [selectedYear, setSelectedYear] = useState<string>('');
+    
     const [selectedMonth, setSelectedMonth] = useState<string>('');
     const [selectedDate, setSelectedDate] = useState<string>('');
     const [dates, setDates] = useState<string[]>([]);
@@ -24,12 +28,6 @@ export default () => {
         setSelectedDate('');
         setDates([]);
     }, [finData]);
-
-    useEffect(() => {
-        dispatch(getFinSummary());
-    }, []);
-
-    
 
     const renderFinTable = (finData: any, title: string, headers: string[]) => {
         return <Card>
@@ -55,7 +53,6 @@ export default () => {
                         return <tr key={i}>
                             {headers.includes('Date') && <td>{fin.date}</td>}
                             {headers.includes('Category') && <td>{fin.category}</td>}
-                            {headers.includes('Team') && <td>{fin.team}</td>}
                             {headers.includes('Amount') && <td className='amount-cell'>{formatter.format(fin.amount)}</td>}
                             {headers.includes('Description') && <td>{fin.description}</td>}
                         </tr>
@@ -65,21 +62,14 @@ export default () => {
         </Card>
     };
 
-    const renderYearSelect = () => {
-        const years = ['2020', '2019', '2018', '2017', '2016', '2015']
-        const onSelectYear = (e: ChangeEvent<HTMLSelectElement>) => {
-            const year = e.target.value;
-            if (year) {
-                dispatch(getFinData(year));
-            }
-            setSelectedYear(year);
-            setSelectedMonth('');
+    const onSelectYear = (year: string) => {
+        if (year) {
+            dispatch(getFinData(year));
+        } else {
+            dispatch(cleanFinData());
         }
-        return <HTMLSelect onChange={onSelectYear}>
-            <option value=''>Year</option>
-            {years.map((year, i) => <option key={i} value={year}>{year}</option>)}
-        </HTMLSelect>
-    };
+        setSelectedMonth('');
+    }
 
     const renderMonthSelect = () => {
         const onSelectMonth = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -122,25 +112,10 @@ export default () => {
     };
 
     const renderSplitter = <div>-------------------------------------</div>;
-
     const renderSummaryElement = (title: string, amount: number) => <div className='space-between'>
         <div>{title}</div> 
         <div>{formatter.format(amount)}</div>
     </div>
-    const renderFinSummary = () => {
-        return <Card className='summary-card'>
-            <label className='title-text'>Financial Status</label>
-            <div className='content'>
-                {renderSummaryElement('일반헌금:', finSummary.totalAmount - finSummary.totalMissionaryOffering - finSummary.totalVehicleOffering - finSummary.totalConstructionOffering)}
-                {renderSummaryElement('선교헌금:', finSummary.totalMissionaryOffering)}
-                {renderSummaryElement('차량헌금:', finSummary.totalVehicleOffering)}
-                {renderSummaryElement('건축헌금:', finSummary.totalConstructionOffering)}
-                {renderSplitter}
-                {renderSummaryElement('Total:', finSummary.totalAmount)}
-                {renderSummaryElement('Available:', finSummary.totalAmount - finSummary.totalMissionaryOffering - finSummary.totalVehicleOffering - finSummary.totalConstructionOffering)}
-            </div>
-        </Card>
-    }
     const renderFinAnualSummary = () => {
         const totalOffering = finData.totalGeneralOffering + finData.totalSpecialOffering
         const totalIncome = totalOffering + finData.totalRevenue;
@@ -183,7 +158,7 @@ export default () => {
         <div className='header'>
             <Card className='control-field'>
                 <div>
-                    {renderYearSelect()}
+                    <YearSelection onChange={onSelectYear} selectedYear={selectedYear} />
                     {renderMonthSelect()}
                     <label> or </label>
                     {renderDateSelect()}
@@ -191,15 +166,15 @@ export default () => {
                 <div className='flex'>
                     {(selectedMonth || selectedDate) && renderSubSummary()}
                     {(!isEmpty(finData) && selectedYear) && renderFinAnualSummary()}
-                    {finSummary && renderFinSummary()}
+                    {finSummary && <FinSummary />}
                 </div>
             </Card>
         </div>
         {selectedYear &&
         <div className='finance-table-field'>
             {finData.offerings && renderFinTable(finData.offerings, 'Offering', ['Date', 'Category', 'Amount'])}
-            {finData.expenses && renderFinTable(finData.expenses, 'Expense', ['Date', 'Team', 'Amount', 'Description'])}
-            {finData.revenues && renderFinTable(finData.revenues, 'Revenue', ['Date', 'Team', 'Amount', 'Description'])}
+            {finData.expenses && renderFinTable(finData.expenses, 'Expense', ['Date', 'Category', 'Amount', 'Description'])}
+            {finData.revenues && renderFinTable(finData.revenues, 'Revenue', ['Date', 'Category', 'Amount', 'Description'])}
         </div>}
     </div>
 }

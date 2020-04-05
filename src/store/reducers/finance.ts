@@ -5,6 +5,7 @@ import { AnyAction, Reducer } from 'redux';
 export const initialState = {
     finData: {} as IFinData,
     finSummary: {} as IFinSummary,
+    selectedYear: '',
 }
 
 export type IFinanceStore = Readonly<typeof initialState>;
@@ -15,33 +16,19 @@ const reducer: Reducer<IFinanceStore, AnyAction> = (state = initialState, action
             return {
                 ...state,
                 finData: action.payload.finData,
+                selectedYear: action.payload.selectedYear,
             };
         case FinanceActionType.FETCH_FIN_SUMMARY:
             return {
                 ...state,
                 finSummary: action.payload.finSummary,
             };
-        // case FinanceActionType.ADD_FINANCE_DATA:
-        //     const newFinData: IFinData = action.payload.finData;
-        //     finData.push(newFinData)
-        //     return {
-        //         ...state,
-        //         finData
-        //     }
-        // case FinanceActionType.DELETE_FINANCE_DATA:
-        //     const deleteIndex = action.payload.index;
-        //     return {
-        //         ...state,
-        //         finData: finData.filter((fin, index) => index !== deleteIndex)
-        //     }
-        // case FinanceActionType.EDIT_FINANCE_DATA:            
-        //     const editIndex = action.payload.index;
-        //     const editFinData = action.payload.finData;
-        //     finData[editIndex] = editFinData;
-        //     return {
-        //         ...state,
-        //         finData
-        //     }
+        case FinanceActionType.CLEAN_FIN_DATA:
+            return {
+                ...state,
+                finData: {},
+                selectedYear: '',
+            }
         default:
             return state
     }
