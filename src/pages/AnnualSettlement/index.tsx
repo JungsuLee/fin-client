@@ -6,7 +6,7 @@ import { months, formatter } from '../helpers';
 import { Card } from '@blueprintjs/core';
 import YearSelection from '../../common/YearSelection';
 import FinSummary from '../../common/FinSummary';
-
+import BarChart from '../../common/Analytics/BarChart';
 
 export default () => {
     
@@ -18,8 +18,10 @@ export default () => {
     const [offeringTotals, setOfferingTotals] = useState<number[]>([]);
     const [annualRevenueData, setAnnualRevenueData] = useState<null | Object>(null);
     const [revenueTotals, setRevenueTotals] = useState<number[]>([]);
+    const [annualTotals, setAnnualTotals] = useState([]);
     const dispatch = useDispatch();
     
+
     useEffect(() => {
         if (!selectedYear) {
             cleanUp();
@@ -68,6 +70,11 @@ export default () => {
                     revenueTotals[a.month - 1] += a.amount;
                 }
             });
+            let totals: any = [];
+            for (let i = 0; i < 12; i++) {
+                totals.push(offeringTotals[i], expenseTotals[i],  revenueTotals[i])
+            }
+            setAnnualTotals(totals);
             setAnnualExpenseData(expense);            
             setExpenseTotals(expenseTotals);
             setAnnualOfferingData(offering);
@@ -83,6 +90,7 @@ export default () => {
         setOfferingTotals(new Array(13).fill(0));
         setAnnualRevenueData(null);
         setRevenueTotals(new Array(13).fill(0));
+        setAnnualTotals([]);
     }
     const renderCell = (value: any, i?: number) => value ? <td key={i} className={`align-right ${value < 0 && 'minus'}`}>{formatter.format(value)}</td> : <td key={i} className='align-center'>-</td>;
     const tableClassName = 'bp3-html-table bp3-html-table-striped bp3-small bp3-interactive';
@@ -170,6 +178,7 @@ export default () => {
     return <div className='analytics-page'>
         <Card className='space-between'>
             <YearSelection selectedYear={selectedYear} onChange={onSelectYear} />
+            {annualTotals.length > 0 && <BarChart title={`${selectedYear} Annual Summary`} data={annualTotals} />}
             <FinSummary />
         </Card>
         {renderAnnualSummary()}

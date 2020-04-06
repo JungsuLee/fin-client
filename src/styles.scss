@@ -2,7 +2,8 @@
 @import '~@blueprintjs/datetime/lib/css/blueprint-datetime.css';
 @import 'pages/FinanceManagement/style.scss';
 @import 'pages/FinanceDB/styles.scss';
-@import 'pages/Analytics/styles.scss';
+@import 'pages/AnnualSettlement/styles.scss';
+@import 'common/Analytics/styles.scss';
 
 .align-right {
     text-align: right !important;
@@ -29,3 +30,4 @@
     display: flex;
     justify-content: space-between;
 }
+
