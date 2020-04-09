@@ -11,13 +11,13 @@ export default () => {
         <nav>
             <ul>
                 <li>
-                    <NavLink to='/dashboard'>Dashboard</NavLink>
+                    <NavLink activeClassName='active' to='/dashboard'>Dashboard</NavLink>
                 </li>
                 <li>
-                    <NavLink to='/finance-db'>Finance Database</NavLink>
+                    <NavLink activeClassName='active' to='/finance-db'>Finance Database</NavLink>
                 </li>
                 <li>
-                    <NavLink to='/annual-settlement'>Annual Settlement</NavLink>
+                    <NavLink activeClassName='active' to='/annual-settlement'>Annual Settlement</NavLink>
                 </li>
             </ul>
         </nav>

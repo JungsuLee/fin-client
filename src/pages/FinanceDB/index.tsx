@@ -114,7 +114,7 @@ export default () => {
     const renderSplitter = <div>-------------------------------------</div>;
     const renderSummaryElement = (title: string, amount: number) => <div className='space-between'>
         <div>{title}</div> 
-        <div>{formatter.format(amount)}</div>
+        <div className={amount < 0 ? 'minus' : ''}>{formatter.format(amount)}</div>
     </div>
     const renderFinAnualSummary = () => {
         const totalOffering = finData.totalGeneralOffering + finData.totalSpecialOffering
