@@ -5,7 +5,6 @@ import { getAnnualAnalytics, cleanAnnualAnalytics } from '../../store/actions/an
 import { months, formatter } from '../helpers';
 import { Card } from '@blueprintjs/core';
 import YearSelection from '../../common/YearSelection';
-import FinSummary from '../../common/FinSummary';
 import BarChart from '../../common/Analytics/BarChart';
 
 export default () => {
@@ -176,10 +175,9 @@ export default () => {
     
 
     return <div className='analytics-page'>
-        <Card className='space-between'>
+        <Card className='header'>
             <YearSelection selectedYear={selectedYear} onChange={onSelectYear} />
             {annualTotals.length > 0 && <BarChart title={`${selectedYear} Annual Summary`} data={annualTotals} />}
-            <FinSummary />
         </Card>
         {renderAnnualSummary()}
         {renderAnnualTable('Expense', annualExpenseData, expenseTotals)}

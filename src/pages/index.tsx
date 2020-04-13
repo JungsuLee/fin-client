@@ -6,21 +6,27 @@ import Login from './Login';
 import AnnualSettlement from './AnnualSettlement';
 import FinanceDB from './FinanceDB';
 
+import FinSummary from '../common/FinSummary';
+import { Card } from '@blueprintjs/core';
+
 export default () => {
     return <div>
-        <nav>
-            <ul>
-                <li>
-                    <NavLink activeClassName='active' to='/dashboard'>Dashboard</NavLink>
-                </li>
-                <li>
-                    <NavLink activeClassName='active' to='/finance-db'>Finance Database</NavLink>
-                </li>
-                <li>
-                    <NavLink activeClassName='active' to='/annual-settlement'>Annual Settlement</NavLink>
-                </li>
-            </ul>
-        </nav>
+        <Card className='space-between'>
+            <nav>
+                <ul>
+                    <li>
+                        <NavLink activeClassName='active' to='/dashboard'>Dashboard</NavLink>
+                    </li>
+                    <li>
+                        <NavLink activeClassName='active' to='/finance-db'>Finance Database</NavLink>
+                    </li>
+                    <li>
+                        <NavLink activeClassName='active' to='/annual-settlement'>Annual Settlement</NavLink>
+                    </li>
+                </ul>
+            </nav>
+            <FinSummary />
+        </Card>
         <Switch>
             <Route path='/login' component={Login} />
             <Route path='/dashboard' component={Dashboard} />

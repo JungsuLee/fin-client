@@ -6,6 +6,7 @@ interface IFinData {
     totalSpecialOffering: number;
     totalExpense: number;
     totalRevenue: number;
+    finSummary: IFinSummary;
 }
 
 interface IOffering {

@@ -10,21 +10,26 @@ export default (props: {
 }) => {
     const svgRef = useRef(null);
     const legendRef = useRef(null);
+
     useEffect(() => {
         if (svgRef.current) {
+
             const len = props.data.length ;
-            const w = 600;
+            const w = 650;
             const h = 120;
             const padding = 40;
             const svg = select(svgRef.current);
+            
             const xScale = scaleBand()
                 .domain(months.map(m => m.slice(0,3)))
                 .range([0, w]);
-                const xAxis = axisBottom(xScale);
+            const xAxis = axisBottom(xScale);
+            
             const yScale = scaleLinear()
                 .domain([0, 18000])
                 .range([h, 0]);
             const yAxis = axisLeft(yScale).ticks(4);
+            
             svg
                 .append('g')
                 .attr('transform', `translate(${padding},${h})`)
@@ -59,7 +64,7 @@ export default (props: {
                 .data(['teal', 'tomato', 'purple'])
                 .join('circle')
                 .attr('r', 5)
-                .attr('cx', 530)
+                .attr('cx', 630)
                 .attr('cy', (d, i) => (12 * i) + 10)
                 .attr('fill', (d) => d)
             legendSvg
@@ -67,7 +72,7 @@ export default (props: {
                 .data(['Offering', 'Expense', 'Revenue'])
                 .join('text')
                 .text((d) => d)
-                .attr('x', 540)
+                .attr('x', 640)
                 .attr('y', (d, i) => (13 * i) + 12)
         }
     }, [props.data])
@@ -75,10 +80,10 @@ export default (props: {
     return <Card>
         <h3>{props.title}</h3>
         <div>
-            <svg width={600} height={50} ref={legendRef} />
+            <svg width={700} height={50} ref={legendRef} />
         </div>
         <div>
-            <svg width={600} ref={svgRef} />
+            <svg width={700} ref={svgRef} />
         </div>
     </Card>
 }

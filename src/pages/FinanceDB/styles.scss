@@ -2,10 +2,12 @@
     .header {
         display: flex;
         justify-content: space-between;
+        // width: 100%;
         .control-field {
             width: 100%;
             display: flex;
             justify-content: space-between;
+            margin-top: 15px;
             .month-select {
                 margin-left: 10px;
             }
@@ -16,13 +18,18 @@
     }
     .finance-table-field {
         display: flex;
-        margin-top: 15px;
     }
     .amount-cell {
         text-align: right;
     }
     .summary-card {
         width: 250px;
-        margin-left: 15px;
+    }
+
+    .total-amount-row {
+        td {
+            border-top: 1px solid lightgrey;
+            text-align: right;
+        }
     }
 }
