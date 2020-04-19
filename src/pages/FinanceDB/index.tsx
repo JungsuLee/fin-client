@@ -21,11 +21,12 @@ export default () => {
     const [totalExpense, setTotalExpense] = useState<number>(0);
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
 
-
-    // const [accGen, setAccGen] = useState<number>(0);
-    // const [accMiss, setAccMiss] = useState<number>(0);
-    // const [accVeh, setAccVeh] = useState<number>(0);
-    // const [accCon, setAccCon] = useState<number>(0);
+    const [accOffering, setAccOffering] = useState<number>(0);
+    const [accExpense, setAccExpense] = useState<number>(0);
+    const [accRevenue, setAccRevenue] = useState<number>(0);
+    const [accMiss, setAccMiss] = useState<number>(0);
+    const [accVeh, setAccVeh] = useState<number>(0);
+    const [accCon, setAccCon] = useState<number>(0);
 
     
     useEffect(() => {
@@ -37,11 +38,6 @@ export default () => {
     const renderFinTable = (finData: any, title: string, headers: string[]) => {
         const dateMap = new Set<string>();
         let totalAmount = 0;
-
-        // let accGenOff = 0;
-        // let accMissOff = 0;
-        // let accVehOff = 0;
-        // let accConOff = 0;
 
         return <Card>
             <h3>{title}</h3>
@@ -108,12 +104,77 @@ export default () => {
             setSelectedMonth(month);
             setSelectedDate('');
             if (month) {
-                const totalOffering = finData.offerings.filter((offering) => offering.date.split('/')[0] === month).map((offering) => offering.amount).reduce((a, b) => a + b, 0);
-                const totalExpense = finData.expenses.filter((expense) => expense.date.split('/')[0] === month).map((expense) => expense.amount).reduce((a, b) => a + b, 0);
-                const totalRevenue = finData.revenues.filter((revenue) => revenue.date.split('/')[0] === month).map((revenue) => revenue.amount).reduce((a, b) => a + b, 0);
+                let totalOffering = 0;
+                let accOffering = 0;
+                let accMissOffering = 0;
+                let accVehOffering = 0;
+                let accConOffering = 0;
+                finData.offerings.forEach((offering) => {
+                    const m = offering.date.split('/')[0];
+                    const { amount, category } = offering;
+                    if (m === month) {
+                        totalOffering += amount;
+                    }
+                    if (m <= month) {
+                        accOffering += amount;
+                    }
+                    if (m <= month && category === '선교헌금') {
+                        accMissOffering += amount;
+                    }
+                    if (m <= month && category === '차량헌금') {
+                        accVehOffering += amount;
+                    }
+                    if (m <= month && category === '건축헌금') {
+                        accConOffering += amount;
+                    }
+                });
                 setTotalOffering(totalOffering);
+                setAccOffering(accOffering);
+
+                let totalExpense = 0;
+                let accExpense = 0;
+                let accMissExpense = 0;
+                let accVehExpense = 0;
+                let accConExpense = 0;
+                finData.expenses.forEach((expense: IExpense) => {
+                    const m = expense.date.split('/')[0];
+                    const { amount, category } = expense;
+                    if (m === month) {
+                        totalExpense += amount;
+                    }
+                    if (m <= month) {
+                        accExpense += amount;
+                    }
+                    if (m <= month && category === '전도사역') {
+                        accMissExpense += amount;
+                    }
+                    if (m <= month && category === '차량 지정') {
+                        accVehExpense += amount;
+                    }
+                    if (m <= month && category === '건축사역') {
+                        accConExpense += amount;
+                    }
+                });
                 setTotalExpense(totalExpense);
+                setAccExpense(accExpense);
+                setAccMiss(accMissOffering - accMissExpense);
+                setAccVeh(accVehOffering - accVehExpense);
+                setAccCon(accConOffering - accConExpense);
+
+                let totalRevenue = 0;
+                let accRevenue = 0;
+                finData.revenues.forEach((revenue) => {
+                    const m = revenue.date.split('/')[0];
+                    const { amount, category } = revenue;
+                    if (m === month) {
+                        totalRevenue += amount;
+                    }
+                    if (m <= month)  {
+                        accRevenue += amount;
+                    }
+                });
                 setTotalRevenue(totalRevenue);
+                setAccRevenue(accRevenue);
             }
         }
         return <HTMLSelect className='month-select' value={selectedMonth} onChange={onSelectMonth} disabled={!selectedYear}>
@@ -128,12 +189,83 @@ export default () => {
             setSelectedDate(date);
             setSelectedMonth('');
             if (date) {
-                const totalOffering = finData.offerings.filter((offering) => offering.date === date).map((offering) => offering.amount).reduce((a, b) => a + b, 0);
-                const totalExpense = finData.expenses.filter((expense) => expense.date === date).map((expense) => expense.amount).reduce((a, b) => a + b, 0);
-                const totalRevenue = finData.revenues.filter((revenue) => revenue.date === date).map((revenue) => revenue.amount).reduce((a, b) => a + b, 0);
+                const selM = date.split('/')[0];
+                const selD = date.split('/')[1];
+
+                let totalOffering = 0;
+                let accOffering = 0;
+                let accMissOffering = 0;
+                let accVehOffering = 0;
+                let accConOffering = 0;
+                finData.offerings.forEach((offering) => {
+                    const m = offering.date.split('/')[0];
+                    const d = offering.date.split('/')[1];
+                    const { amount, category } = offering;
+                    if (offering.date === date) {
+                        totalOffering += amount;
+                    }
+                    if (m <= selM && d <= selD) {
+                        accOffering += amount;
+                    }
+                    if (m <= selM && d <= selD && category === '선교헌금') {
+                        accMissOffering += amount;
+                    }
+                    if (m <= selM && d <= selD && category === '차량헌금') {
+                        accVehOffering += amount;
+                    }
+                    if (m <= selM && d <= selD && category === '건축헌금') {
+                        accConOffering += amount;
+                    }
+                });
                 setTotalOffering(totalOffering);
+                setAccOffering(accOffering);
+
+                let totalExpense = 0;
+                let accExpense = 0;
+                let accMissExpense = 0;
+                let accVehExpense = 0;
+                let accConExpense = 0;
+                finData.expenses.forEach((expense: IExpense) => {
+                    const m = expense.date.split('/')[0];
+                    const d = expense.date.split('/')[1];
+                    const { amount, category } = expense;
+                    if (expense.date === date) {
+                        totalExpense += amount;
+                    }
+                    if (m <= selM && d <= selD) {
+                        accExpense += amount;
+                    }
+                    if (m <= selM && d <= selD && category === '전도사역') {
+                        accMissExpense += amount;
+                    }
+                    if (m <= selM && d <= selD && category === '차량 지정') {
+                        accVehExpense += amount;
+                    }
+                    if (m <= selM && d <= selD && category === '건축사역') {
+                        accConExpense += amount;
+                    }
+                });
                 setTotalExpense(totalExpense);
+                setAccExpense(accExpense);
+                setAccMiss(accMissOffering - accMissExpense);
+                setAccVeh(accVehOffering - accVehExpense);
+                setAccCon(accConOffering - accConExpense);
+
+                let totalRevenue = 0;
+                let accRevenue = 0;
+                finData.revenues.forEach((revenue) => {
+                    const m = revenue.date.split('/')[0];
+                    const d = revenue.date.split('/')[1];
+                    const { amount, category } = revenue;
+                    if (revenue.date === date) {
+                        totalRevenue += amount;
+                    }
+                    if (m <= selM && d <= selD)  {
+                        accRevenue += amount;
+                    }
+                });
                 setTotalRevenue(totalRevenue);
+                setAccRevenue(accRevenue);
             }
         }
         return <HTMLSelect value={selectedDate} onChange={onSelectDate} disabled={!selectedYear}>
@@ -142,8 +274,7 @@ export default () => {
         </HTMLSelect>
     };
 
-    const renderSplitter = <div>-------------------------------------</div>;
-    const renderSummaryElement = (title: string, amount: number) => <div className='space-between'>
+    const renderSummaryElement = (title: string, amount: number, split?: boolean) => <div className={`space-between ${split && 'border-top'}`}>
         <div>{title}</div> 
         <div className={amount < 0 ? 'minus' : ''}>{formatter.format(amount)}</div>
     </div>
@@ -151,30 +282,16 @@ export default () => {
         const totalOffering = finData.totalGeneralOffering + finData.totalSpecialOffering;
         const totalIncome = totalOffering + finData.totalRevenue;
         return <Card className='annual-summary-card'>
-            <table className='bp3-html-table bp3-small bp3-html-table-striped'>
-                <thead>
-                    <tr>
-                        <th className='border-right'>Annual Summary</th>
-                        <th>일반헌금</th>
-                        <th className='border-right'>특별헌금</th>
-                        <th>Offering</th>
-                        <th>Revenue</th>
-                        <th className='border-right'>Expense</th>
-                        <th>Difference</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td className='border-right'>{selectedYear}</td>
-                        <td>{formatter.format(finData.totalGeneralOffering)}</td>
-                        <td className='border-right'>{formatter.format(finData.totalSpecialOffering)}</td>
-                        <td>{formatter.format(totalOffering)}</td>
-                        <td>{formatter.format(finData.totalRevenue)}</td>
-                        <td className='border-right'>{formatter.format(finData.totalExpense)}</td>
-                        <td className={totalIncome - finData.totalExpense < 0 ? 'minus' : ''}>{formatter.format(totalIncome - finData.totalExpense)}</td>
-                    </tr>
-                </tbody>
-            </table>
+
+            <label className='title-text'>{selectedYear} Summary</label>
+            <div className='content'>
+                {renderSummaryElement('일반헌금:', finData.totalGeneralOffering)}
+                {renderSummaryElement('특별헌금:', finData.totalSpecialOffering)}
+                {renderSummaryElement('Offering:', totalOffering, true)}
+                {renderSummaryElement('Revenue:', finData.totalRevenue)}
+                {renderSummaryElement('Expense:', finData.totalExpense)}
+                {renderSummaryElement('Difference:', totalIncome - finData.totalExpense, true)}
+            </div>
         </Card>
     }
     const renderSubSummary = () => {
@@ -190,8 +307,7 @@ export default () => {
                 {renderSummaryElement('Total Offering:', totalOffering)}
                 {renderSummaryElement('Total Revenue:', totalRevenue)}
                 {renderSummaryElement('Total Expense:', totalExpense)}
-                {renderSplitter}
-                {renderSummaryElement('Difference:', totalOffering - totalExpense + totalRevenue)}
+                {renderSummaryElement('Difference:', totalOffering - totalExpense + totalRevenue, true)}
             </div>
         </Card>
     }
@@ -199,30 +315,30 @@ export default () => {
     const renderOfferingSummary = () => {
         const { totalAmount, totalMissionaryOffering, totalVehicleOffering, totalConstructionOffering } = finData.finSummary;
         return (
-            <Card>
-                <table className='bp3-html-table bp3-small bp3-html-table-striped'>
-                    <thead>
-                        <tr>
-                            <th>Current Balance</th>
-                            <th>일반헌금</th>
-                            <th>선교헌금</th>
-                            <th>차량헌금</th>
-                            <th>건축헌금</th>
-                            <th>Available</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{formatter.format(totalAmount)}</td>
-                            <td>{formatter.format(totalAmount - totalMissionaryOffering - totalVehicleOffering - totalConstructionOffering)}</td>
-                            <td>{formatter.format(totalMissionaryOffering)}</td>
-                            <td>{formatter.format(totalVehicleOffering)}</td>
-                            <td>{formatter.format(totalConstructionOffering)}</td>
-                            <td>{formatter.format(totalAmount - totalMissionaryOffering - totalVehicleOffering - totalConstructionOffering)}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </Card>
+            <table className='bp3-html-table bp3-small bp3-html-table-striped border'>
+                <thead>
+                    <tr>
+                        <th className='border-right'>{selectedMonth || selectedDate}/{selectedYear} Balance</th>
+                        <th>선교헌금</th>
+                        <th>차량헌금</th>
+                        <th className='border-right'>건축헌금</th>
+                        <th>Available</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td className='border-right'>{formatter.format(totalAmount + accOffering + accRevenue - accExpense)}</td>
+                        <td>{formatter.format(totalMissionaryOffering + accMiss)}</td>
+                        <td>{formatter.format(totalVehicleOffering + accVeh)}</td>
+                        <td className='border-right'>{formatter.format(totalConstructionOffering + accCon)}</td>
+                        <td>
+                            {formatter.format(
+                                totalAmount - (totalMissionaryOffering + accMiss) - (totalVehicleOffering + accVeh) - (totalConstructionOffering + accCon) + accOffering + accRevenue - accExpense
+                            )}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         )
     }
 
@@ -236,8 +352,7 @@ export default () => {
                     {renderDateSelect()}
                 </div>
                 <div>
-                    {(!isEmpty(finData) && selectedYear) && renderFinAnualSummary()}
-                    {(!isEmpty(finData) && selectedYear) && renderOfferingSummary()}
+                    {(!isEmpty(finData) && (selectedMonth || selectedDate)) && renderOfferingSummary()}
                 </div>
             </Card>
         </div>
@@ -249,6 +364,7 @@ export default () => {
             </div>
             {finData.expenses && renderFinTable(finData.expenses, 'Expense', ['Date', 'Category', 'Amount', 'Description'])}
             <div>
+                {(!isEmpty(finData) && selectedYear) && renderFinAnualSummary()}
                 {(selectedMonth || selectedDate) && renderSubSummary()}
             </div>
         </div>}

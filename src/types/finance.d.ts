@@ -22,17 +22,18 @@ interface IExpense {
     date: string;
     amount: number;
     description: string;
-    team: string;
-    status: string;
-    reference: string;
+    category: string;
+    // status: string;
+    // reference: string;
 }
 
 interface IRevenue {
     date: string;
     amount: number;
     description: string;
-    team: string;
-    reference: string;
+    category: string;
+    // team: string;
+    // reference: string;
 }
 
 interface IFinSummary {
