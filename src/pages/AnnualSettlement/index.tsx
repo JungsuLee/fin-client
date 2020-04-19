@@ -9,6 +9,7 @@ import BarChart from '../../common/Analytics/BarChart';
 
 export default () => {
     
+    const years = useSelector((state: IStoreState) => state.finance.years);
     const annaulAnalytics = useSelector((state: IStoreState) => state.analytics.annaulAnalytics);
     const selectedYear = useSelector((state: IStoreState) => state.analytics.selectedYear);
     const [annualExpenseData, setAnnualExpenseData] = useState<null | Object>(null);
@@ -176,7 +177,7 @@ export default () => {
 
     return <div className='analytics-page'>
         <Card className='header'>
-            <YearSelection selectedYear={selectedYear} onChange={onSelectYear} />
+            <YearSelection years={years} selectedYear={selectedYear} onChange={onSelectYear} />
             {annualTotals.length > 0 && <BarChart title={`${selectedYear} Annual Summary`} data={annualTotals} />}
         </Card>
         {renderAnnualSummary()}

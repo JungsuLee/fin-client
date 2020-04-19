@@ -37,6 +37,7 @@ interface IRevenue {
 }
 
 interface IFinSummary {
+    years: string[];
     totalAmount: number;
     totalGeneralOffering: number;
     totalMissionaryOffering: number;

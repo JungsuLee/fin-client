@@ -9,6 +9,7 @@ import YearSelection from '../../common/YearSelection';
 
 
 export default () => {
+    const years = useSelector((state: IStoreState) => state.finance.years);
     const selectedYear = useSelector((state: IStoreState) => state.finance.selectedYear);
     const finData: IFinData = useSelector((state: IStoreState) => state.finance.finData);
     
@@ -346,7 +347,7 @@ export default () => {
         <div className='header'>
             <Card className='control-field'>
                 <div>
-                    <YearSelection onChange={onSelectYear} selectedYear={selectedYear} />
+                    <YearSelection years={years} onChange={onSelectYear} selectedYear={selectedYear} />
                     {renderMonthSelect()}
                     <label> or </label>
                     {renderDateSelect()}
